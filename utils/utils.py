@@ -46,7 +46,6 @@ def check_filename(filename:str, filetype:str) -> str:
         str: corrected filename
     """
     filename_split = filename.split(".")
-    print(filename_split)
     if len(filename_split) == 1:
         new_filename = ".".join([filename, filetype])
     elif len(filename_split) == 2:
@@ -71,7 +70,6 @@ def create_files_list(filenames:set, filetype:str, working_folder:pathlib.PosixP
         list: list of full file paths
     """
     filepaths_list = []
-    print(working_folder/saving_folder)
     pathlib.Path.mkdir(working_folder/saving_folder, exist_ok=True)
     
     for file in filenames:
