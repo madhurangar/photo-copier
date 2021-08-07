@@ -5,7 +5,7 @@ from utils import utils as u
 
 PHOTOS_FOLDER = "selected_photos" # folder to copy new photos over 
 
-ap = argparse.ArgumentParser(description="Copy pre defined list of camera RAW files to a new folder. See more at ")
+ap = argparse.ArgumentParser(description="Copy pre defined list of camera RAW files to a new folder. See more at <https://github.com/madhurangar/photo-copier>")
 ap.add_argument('input', type=str, help='Text file containing the selected files list to be coppied over')
 ap.add_argument('-filetype', type=str, help='Raw photos file extension (default: crw)', default="CRW")
 args = ap.parse_args()
