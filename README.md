@@ -24,7 +24,7 @@ Now you should be able to use `pcopy` in the command line.
 pcopy -h                                           
 usage: pcopy.py [-h] [-filetype FILETYPE] input
 
-Copy pre defined list of camera RAW files to a new folder. See more at
+Copy pre defined list of camera RAW files to a new folder. See more at <https://github.com/madhurangar/photo-copier>
 
 positional arguments:
   input               Text file containing the selected files list to be
