@@ -18,3 +18,19 @@ echo 'alias pcopy="~/opt/photo-copier/pcopy.py"' >> ~/.zshrc
 
 Now you should be able to use `pcopy` in the command line. 
 
+#### Usage
+
+```bash
+pcopy -h                                           
+usage: pcopy.py [-h] [-filetype FILETYPE] input
+
+Copy pre defined list of camera RAW files to a new folder. See more at
+
+positional arguments:
+  input               Text file containing the selected files list to be
+                      coppied over
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -filetype FILETYPE  Raw photos file extension (default: crw)
+```
