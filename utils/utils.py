@@ -35,8 +35,8 @@ def check_filename(filename:str, filetype:str) -> str:
     """check and correct file extensions.
     ie. IMG5678     -> IMG5678.CRW
         IMG5678.JPG -> IMG5678.CRW etc...
-        
-    * NOTE: Image file names "only" contain strings+integers 
+    
+    # TODO: Tackle file names like "IMG5678-copy copy copy.jpg"
 
     Args:
         filename (str): filename extracted from the text file
@@ -78,6 +78,7 @@ def create_files_list(filenames:set, filetype:str, working_folder:pathlib.PosixP
         try:
             # extract the full path to raw files. neglect PHOTOS_FOLDER
             # filepath = list(pathlib.Path(working_folder).rglob(corrected_filename))
+            # TODO: Tackle same file name in different folders
             filepath = [path for path in pathlib.Path(working_folder).rglob(corrected_filename) if saving_folder not in path.parts[-2:]]
             if len(filepath) > 1:
                 print(f"{corrected_filename}: multiple RAW files with same name!")
