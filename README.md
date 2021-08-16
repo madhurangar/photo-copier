@@ -34,3 +34,5 @@ optional arguments:
   -h, --help          show this help message and exit
   -filetype FILETYPE  Raw photos file extension (default: crw)
 ```
+
+Looking for Windows installation instructions? see [here](installation-notes.md)
