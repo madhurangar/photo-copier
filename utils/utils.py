@@ -1,8 +1,7 @@
 #!/usr/bin/env python3 
 
-from sys import exit
+from sys import exit, path
 import pathlib, shutil, tqdm
-
 
 def abnormal_termination()->None:
     print(">Terminated with an error!")
@@ -31,81 +30,84 @@ def read_file(file_name:str)->set:
     return data_set
 
 
-def check_filename(filename:str, filetype:str) -> str:
-    """check and correct file extensions.
-    ie. IMG5678     -> IMG5678.CRW
-        IMG5678.JPG -> IMG5678.CRW etc...
-    
-    # TODO: Tackle file names like "IMG5678-copy copy copy.jpg"
+def clean_filename(filename:str)->str:
+    """get file name with out the extension
 
     Args:
-        filename (str): filename extracted from the text file
-        filetype (str): raw file extension
+        filename (str): file name with or with out extension 
+        or duplicate files (i.e. IMG1234 copy.jpg)
 
     Returns:
-        str: corrected filename
+        str: cleaned filename
     """
-    filename_split = filename.split(".")
-    if len(filename_split) == 1:
-        new_filename = ".".join([filename, filetype])
-    elif len(filename_split) == 2:
-        new_filename = ".".join([filename_split[0], filetype])
-    else:
-        print(f"ERROR: Something's not right!. Please re-check the file list. (i.e. filename: {filename})")
-        abnormal_termination()
-           
-    return new_filename
+    fname_split = filename.split()[0].split(".")[0].split("-")[0].split("_")[0]
+    
+    return fname_split
+    
 
-
-def create_files_list(filenames:set, filetype:str, working_folder:pathlib.PosixPath, saving_folder:str) -> list:
+def create_files_list(filenames:set, accepted_extensions:set, working_folder:pathlib.PosixPath, saving_folder:str) -> dict:
     """create a list of file paths to be copied
 
     Args:
         filenames (list): file names list from the text file
-        filetype (str): raw file type
+        accepted_extensions (set): raw file types
         working_folder (pathlib.PosixPath): path to working folder, where all the raw files are
         saving_folder (str, optional): path to the folder where photos gonna be coppied
 
     Returns:
-        list: list of full file paths
+        dict: list of full file paths {filename:filepath}
     """
-    filepaths_list = []
-    pathlib.Path.mkdir(working_folder/saving_folder, exist_ok=True)
+    filepaths = dict()
     
-    for file in filenames:
-        # add/modify extension if not supplied in the text file
-        corrected_filename = check_filename(file, filetype)
-        try:
-            # extract the full path to raw files. neglect PHOTOS_FOLDER
-            # filepath = list(pathlib.Path(working_folder).rglob(corrected_filename))
-            # TODO: Tackle same file name in different folders
-            filepath = [path for path in pathlib.Path(working_folder).rglob(corrected_filename) if saving_folder not in path.parts[-2:]]
-            if len(filepath) > 1:
-                print(f"{corrected_filename}: multiple RAW files with same name!")
-                # print(filepath)
-            if filepath:
-                filepaths_list.extend(filepath)
-            else:
-                print(f"{corrected_filename}: can not find RAW file")
-        except:
-            print(f"ERROR: something went wrong with {file}")
+    # current files in the saved files location if exists
+    if pathlib.Path(working_folder/saving_folder).exists():
+        current_saved_files = set(pathlib.Path(working_folder/saving_folder).glob('*.*'))
+    else:
+        current_saved_files = set()   
     
-    return filepaths_list
+    # generate files list to copy
+    for fname in filenames:
+        cleaned_fname = clean_filename(fname)
+        raw_files = set(working_folder.glob(f'**/{cleaned_fname}.*')) - current_saved_files
+        files = [file for file in raw_files if file.suffix.upper() in accepted_extensions]
+        if len(files) == 1:
+            filepaths[files[0].name] = files[0]
+        elif len(files) > 1:
+            for fr in files:
+                new_fname = f"{fr.stem} - {fr.parent.name}{fr.suffix}"
+                filepaths[new_fname] = fr
+           
+    return filepaths
+
+
+def cp(src, dest):
+    try:
+        shutil.copy2(src, dest)
+    except shutil.Error():
+        print(f">ERROR: can't copy {src.name}")
         
 
-def copy_files(filepaths_list:list, working_folder:pathlib.PosixPath, saving_folder:str)->None:
+def copy_files(filepaths:dict, working_folder:pathlib.PosixPath, saving_folder:str, force_copy=False)->None:
     """copy RAW files to a new folder
 
     Args:
         filepaths_list (list): list of RAW files and their full path
         working_folder (pathlib.PosixPath): current working folder
     """ 
-    for file in tqdm.tqdm(filepaths_list):
-        try:
-            shutil.copy2(file, working_folder/saving_folder)
-        except shutil.SameFileError:
-            print(f"{file.name} already exists. skipping...")
-        
+    # create folder to save new files if it doesn't exist
+    pathlib.Path.mkdir(working_folder/saving_folder, exist_ok=True)
+    save_path = working_folder/saving_folder
+    
+    if force_copy:
+        print(">force-copy enabled: Overridding current files...")
+    
+    for fname, fpath in tqdm.tqdm(filepaths.items()):
+        if not pathlib.Path(save_path/fname).exists():
+            cp(fpath, save_path/fname)
+        elif pathlib.Path(save_path/fname).exists() and force_copy:
+            cp(fpath, save_path/fname)
+        else:
+            print(f">Skipping: {fname} already exists at destination")
 
 def get_cwd():
     cwd = pathlib.Path.cwd()
