@@ -44,6 +44,15 @@ def clean_filename(filename:str)->str:
     return fname_split
     
 
+def create_extensions_list(extensions:list[str])->set:
+    ext = set()
+    for e in extensions:
+        e = e.split(".")[-1]
+        ext.add(f".{e.upper()}")
+        
+    return ext
+
+
 def create_files_list(filenames:set, accepted_extensions:set, working_folder:pathlib.PosixPath, saving_folder:str) -> dict:
     """create a list of file paths to be copied
 
