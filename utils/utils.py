@@ -84,7 +84,11 @@ def create_files_list(filenames:set, accepted_extensions:set, working_folder:pat
             for fr in files:
                 new_fname = f"{fr.stem} - {fr.parent.name}{fr.suffix}"
                 filepaths[new_fname] = fr
-           
+    
+    if not filepaths:
+        print(">No files found!")
+        abnormal_termination()
+               
     return filepaths
 
 
