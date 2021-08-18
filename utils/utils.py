@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 
 
-from sys import exit, path
+from sys import exit
 import pathlib, shutil, tqdm
 
 def abnormal_termination()->None:
@@ -9,8 +9,7 @@ def abnormal_termination()->None:
 
 
 def read_file(file_name:str)->set:
-    """
-    Read white-space separated text file and create a list
+    """read white-space separated text file and create a list
 
     Args:
         file_name (str): path to .txt file
@@ -80,14 +79,20 @@ def create_files_list(filenames:set, accepted_extensions:set, working_folder:pat
     return filepaths
 
 
-def cp(src, dest):
+def cp(src:pathlib.Path, dest:pathlib.Path)->None:
+    """copy files from src (source) to dest (destination)
+
+    Args:
+        src (pathlib.Path): path of the source file
+        dest (pathlib.Path): path of the destination
+    """
     try:
         shutil.copy2(src, dest)
     except shutil.Error():
         print(f">ERROR: can't copy {src.name}")
         
 
-def copy_files(filepaths:dict, working_folder:pathlib.PosixPath, saving_folder:str, force_copy=False)->None:
+def copy_files(filepaths:dict, working_folder:pathlib.Path, saving_folder:str, force_copy=False)->None:
     """copy RAW files to a new folder
 
     Args:
