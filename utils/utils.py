@@ -4,7 +4,7 @@ from sys import exit
 import pathlib, shutil, tqdm
 
 def abnormal_termination()->None:
-    print(">Terminated with an error!")
+    print(">Exit with an error.")
     exit()
 
 
@@ -117,7 +117,7 @@ def copy_files(filepaths:dict, working_folder:pathlib.Path, saving_folder:str, f
     save_path = working_folder/saving_folder
     
     if force_copy:
-        print(">force-copy enabled: Overridding current files...")
+        print(">force-copy enabled: Overwriting current files...")
     
     for fname, fpath in tqdm.tqdm(filepaths.items()):
         if not pathlib.Path(save_path/fname).exists():
