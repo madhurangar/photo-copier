@@ -29,7 +29,7 @@ def read_file(file_name:str)->set:
     return data_set
 
 
-def clean_filename(filename:str)->str:
+def clean_filename(filename:str, separate_chars:list)->str:
     """get file name with out the extension
 
     Args:
@@ -39,9 +39,11 @@ def clean_filename(filename:str)->str:
     Returns:
         str: cleaned filename
     """
-    fname_split = filename.split()[0].split(".")[0].split("-")[0].split("_")[0]
+    fname = filename.split()[0]
+    for char in separate_chars:
+        fname = fname.split(char)[0]
     
-    return fname_split
+    return fname
     
 
 def create_extensions_list(extensions:list[str])->set:
@@ -53,7 +55,7 @@ def create_extensions_list(extensions:list[str])->set:
     return ext
 
 
-def create_files_list(filenames:set, accepted_extensions:set, working_folder:pathlib.PosixPath, saving_folder:str) -> dict:
+def create_files_list(filenames:set, accepted_extensions:set, working_folder:pathlib.PosixPath, saving_folder:str, separate_chars:list) -> dict:
     """create a list of file paths to be copied
 
     Args:
@@ -75,7 +77,7 @@ def create_files_list(filenames:set, accepted_extensions:set, working_folder:pat
     
     # generate files list to copy
     for fname in filenames:
-        cleaned_fname = clean_filename(fname)
+        cleaned_fname = clean_filename(fname, separate_chars)
         raw_files = set(working_folder.glob(f'**/{cleaned_fname}.*')) - current_saved_files
         files = [file for file in raw_files if file.suffix.upper() in accepted_extensions]
         if len(files) == 1:
@@ -105,13 +107,14 @@ def cp(src:pathlib.Path, dest:pathlib.Path)->None:
         print(f">ERROR: can't copy {src.name}")
         
 
-def copy_files(filepaths:dict, working_folder:pathlib.Path, saving_folder:str, force_copy=False)->None:
+def copy_files(filepaths:dict, working_folder:pathlib.Path, saving_folder:str, force_copy=False)->int:
     """copy RAW files to a new folder
 
     Args:
         filepaths_list (list): list of RAW files and their full path
         working_folder (pathlib.PosixPath): current working folder
     """ 
+    n_skipped = 0
     # create folder to save new files if it doesn't exist
     pathlib.Path.mkdir(working_folder/saving_folder, exist_ok=True)
     save_path = working_folder/saving_folder
@@ -125,7 +128,10 @@ def copy_files(filepaths:dict, working_folder:pathlib.Path, saving_folder:str, f
         elif pathlib.Path(save_path/fname).exists() and force_copy:
             cp(fpath, save_path/fname)
         else:
-            print(f">Skipping: {fname} already exists at destination")
+            # print(f">Skipping: {fname} already exists at destination")
+            n_skipped += 1
+            
+    return n_skipped
 
 def get_cwd():
     cwd = pathlib.Path.cwd()
