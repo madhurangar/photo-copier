@@ -22,17 +22,22 @@ Now you should be able to use `pcopy` in the command line.
 
 ```bash
 pcopy -h                                           
-usage: pcopy.py [-h] [-filetype FILETYPE] input
+usage: pcopy.py [-h] [-n FOLDER_NAME] [-f] [-t FILETYPES [FILETYPES ...]] [-s SEPARATE_CHARS [SEPARATE_CHARS ...]] input
 
-Copy pre defined list of camera RAW files to a new folder. See more at <https://github.com/madhurangar/photo-copier>
+Copy list of camera RAW files into a new folder. See more at <https://github.com/madhurangar/photo-copier>
 
 positional arguments:
-  input               Text file containing the selected files list to be
-                      coppied over
+  input                 Text file containing the filenames (with or without file extensions)
 
 optional arguments:
-  -h, --help          show this help message and exit
-  -filetype FILETYPE  Raw photos file extension (default: crw)
+  -h, --help            show this help message and exit
+  -n FOLDER_NAME, --folder-name FOLDER_NAME
+                        Folder (name! not the path) to copy files over
+  -f, --force-copy      Overwrite already coppied files
+  -t FILETYPES [FILETYPES ...], --filetypes FILETYPES [FILETYPES ...]
+                        Raw file extensions (defaults: NEF ARW CR2 CR3 DNG and CRW)
+  -s SEPARATE_CHARS [SEPARATE_CHARS ...], --separate-chars SEPARATE_CHARS [SEPARATE_CHARS ...]
+                        Split chars to construct the original RAW file name. e.g. extract "IMG12345" from "IMG12345-copy_new (1).ext" (defaults: . - and _ )
 ```
 
 Looking for Windows installation instructions? see [here](installation-notes.md)
